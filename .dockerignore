@@ -1,6 +1,6 @@
 .git/
 .github/
-README.md
 
+*.md
 .dockerignore
 Dockerfile

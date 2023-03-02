@@ -23,10 +23,22 @@ if [[ $ERRCODE -ne 0 ]]; then
 	exit 1
 fi
 
-# Run the setup script to create the DB and the schema in the DB
-/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P $MSSQL_SA_PASSWORD -d master -i setup.sql \
-	-v MSSQL_DATABASE=$MSSQL_DATABASE \
-	-v MSSQL_USER=$MSSQL_USER \
-	-v MSSQL_PASSWORD=$MSSQL_PASSWORD \
+# Run the setup scripts to create the DB and the schema in the DB
+if [[ -n "$MSSQL_DATABASE" ]]; then
+	# Create the database
+	/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P $MSSQL_SA_PASSWORD -d master -i setup-db.sql \
+		-v MSSQL_DATABASE=$MSSQL_DATABASE
+
+	if [[ -n "$MSSQL_USER" ]]; then
+		# Create the user
+		/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P $MSSQL_SA_PASSWORD -d $MSSQL_DATABASE -i setup-user.sql \
+			-v MSSQL_DATABASE=$MSSQL_DATABASE \
+			-v MSSQL_USER=$MSSQL_USER \
+			-v MSSQL_PASSWORD=$MSSQL_PASSWORD
+
+		# Finalize the setup
+		/opt/mssql-tools/bin/sqlcmd -S localhost -U $MSSQL_USER -P $MSSQL_PASSWORD -d $MSSQL_DATABASE -i setup.sql
+	fi
+fi
 
 echo "Ending configure-db script"
