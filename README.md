@@ -70,14 +70,23 @@ Define the password of the account created during initialization.
 # Custom scripts
 
 The initialization process supports two custom scripts that can be provided using volumes.
+They are both stored in the `/usr/config/` folder.
 
 ## `init.sql`
 
 This script will be executed if `MSSQL_DATABASE`, `MSSQL_USER` and `MSSQL_PASSWORD` are defined. It will be executed on the created database with the dedicated user and can be used to configure the database itself.
 
+```bash
+$ docker run --name mssql -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<YourStrong!Passw0rd>" -e "MSSQL_DATABASE=HelloWorld" -e "MSSQL_USER=hello" -e "MSSQL_PASSWORD=World!Passw0rd" -v local-init.sql:/usr/config/init.sql:ro -p 1433:1433 -d mssql-initialized:latest
+```
+
 ## `init-sa.sql`
 
 This script will be executed if `MSSQL_DATABASE` is defined. It will be executed on the master database with the SA account and can be used to configure the server itself.
+
+```bash
+$ docker run --name mssql -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<YourStrong!Passw0rd>" -e "MSSQL_DATABASE=HelloWorld" -e "MSSQL_USER=hello" -e "MSSQL_PASSWORD=World!Passw0rd" -v local-init-sa.sql:/usr/config/init-sa.sql:ro -p 1433:1433 -d mssql-initialized:latest
+```
 
 ## Execution order
 
