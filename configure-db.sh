@@ -36,9 +36,14 @@ if [[ -n "$MSSQL_DATABASE" ]]; then
 			-v MSSQL_USER=$MSSQL_USER \
 			-v MSSQL_PASSWORD=$MSSQL_PASSWORD
 
-		# Finalize the setup
-		/opt/mssql-tools/bin/sqlcmd -S localhost -U $MSSQL_USER -P $MSSQL_PASSWORD -d $MSSQL_DATABASE -i setup.sql
+		# Finalize the setup as the dedicated user
+		/opt/mssql-tools/bin/sqlcmd -S localhost -U $MSSQL_USER -P $MSSQL_PASSWORD -d $MSSQL_DATABASE -i init.sql
 	fi
+
+	# Finalize the setup as the System Administrator
+	/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P $MSSQL_SA_PASSWORD -d master -i init-sa.sql \
+		-v MSSQL_DATABASE=$MSSQL_DATABASE \
+		-v MSSQL_USER=$MSSQL_USER \
 fi
 
 echo "Ending configure-db script"

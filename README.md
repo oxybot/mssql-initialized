@@ -66,3 +66,32 @@ Define the username of the account created during initialization. This account w
 Required if `MSSQL_USER` is defined. Ignored if `MSSQL_DATABASE` is not defined.
 
 Define the password of the account created during initialization.
+
+# Custom scripts
+
+The initialization process supports two custom scripts that can be provided using volumes.
+
+## `init.sql`
+
+This script will be executed if `MSSQL_DATABASE`, `MSSQL_USER` and `MSSQL_PASSWORD` are defined. It will be executed on the created database with the dedicated user and can be used to configure the database itself.
+
+## `init-sa.sql`
+
+This script will be executed if `MSSQL_DATABASE` is defined. It will be executed on the master database with the SA account and can be used to configure the server itself.
+
+## Execution order
+
+```mermaid
+flowchart TD
+    S[start] --> A
+    A{MSSQL_DATABASE is defined}
+    A -->|false| B[No scripts executed]
+    A -->|true| C[Create the database]
+    B --> End
+    C --> D{MSSQL_USER is defined}
+    D -->|true| E[Create the user]
+    D -->|false| G
+    E --> F[Execute init.sql]
+    F --> G[Execute init-sa.sql]
+    G --> End[end]
+```
