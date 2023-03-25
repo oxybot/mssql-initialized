@@ -3,6 +3,8 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
+  schedule:
+    - cron: "0 10 * * 2"
 
 env:
   GITHUB_IMAGE_NAME: ghcr.io/${{ github.repository }}
